@@ -14,6 +14,6 @@ int main(int argc, char **argv)
 {
 	yy::parser parser;
 	if(!parser.parse())
-		std::cout << "Parsed input" << std::endl;
+		root.dump();
 	return 0;
 }
