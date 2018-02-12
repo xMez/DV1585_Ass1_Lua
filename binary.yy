@@ -1,4 +1,4 @@
-%skeleton "larl1.cc"
+%skeleton "lalr1.cc"
 %defines
 %define api.value.type variant
 %define api.token.constructor
@@ -23,7 +23,6 @@
 %token <std::string> THEN
 %token <std::string> ELSEIF
 %token <std::string> ELSE
-%token <std::string>
 
 %token <std::string> PLUS
 %token <std::string> MIN
@@ -37,11 +36,11 @@
 %token <std::string> LESS_EQUAL_THAN
 %token <std::string> MORE_EQUAL_THAN
 %token <std::string> TILDE_EQUAL
-%token <std::string> APPEND
+%token <std::string> CONCAT
 
 %token <std::string> AND
 %token <std::string> OR
-%token <std::string> SQUARE
+%token <std::string> LEN
 %token <std::string> NOT
 
 %token <std::string> LOCAL
@@ -81,7 +80,7 @@
 %type <Node> ifexp
 %type <Node> optelseif
 %type <Node> elseif
-%type <Node> else
+%type <Node> optelse
 %type <Node> funcnamelist
 %type <Node> funcname
 %type <Node> varlist
@@ -117,13 +116,13 @@
 
 block
 	: chunk			{ $$ = Node("block", "");
-				  $$.children.push_back($1):
+				  $$.children.push_back($1);
 				  root = $$;
 				}
 	;
 
 chunk
-	: optchunk laststat	{ $$ = $1:
+	: optchunk laststat	{ $$ = $1;
 				  $$.children.push_back($2);
 				}
 	| optchunk		{ $$ = $1; }
@@ -151,7 +150,7 @@ laststat
 	;
 
 optsemi
-	: SEMI
+	: SEMI			{ }
 	| /*empty*/
 	;
 
@@ -161,7 +160,7 @@ stat
 				  $$.children.push_back($1);
 				  $$.children.push_back($3);
 				}
-	| functioncall		{ $$ = $1 }
+	| functioncall		{ $$ = $1; }
 	| DO block END		{ $$ = Node("stat", "");
 				  $$.children.push_back($2);
 				}
@@ -175,11 +174,11 @@ stat
 				  $$.children.push_back($2);
 				  $$.children.push_back($4);
 				}	
-	| IF exp THEN optelseif optelse END
+	| ifexp optelseif optelse END
 				{ $$ = Node("stat", "");
+				  $$.children.push_back($1);
 				  $$.children.push_back($2);
-				  $$.children.push_back($4);
-				  $$.children.push_back($5);
+				  $$.children.push_back($3);
 				}
 	| FOR name ASSIGN exp COMMA exp DO block END
 				{ $$ = Node("stat", "");
@@ -260,7 +259,7 @@ funcnamelist
 
 funcname
 	: name			{ $$ = Node("funcname", "");
-				  $$.children.push_back($2);
+				  $$.children.push_back($1);
 				}
 	| funcname DOT name	{ $$ = $1;
 				  $$.children.push_back($3);
@@ -269,7 +268,7 @@ funcname
 
 varlist
 	: var			{ $$ = Node("varlist", "");
-				  $$.children.push_back($3);
+				  $$.children.push_back($1);
 				}
 	| varlist COMMA var	{ $$ = $1;
 				  $$.children.push_back($3);
@@ -326,7 +325,7 @@ exp
 	| tableconstructor	{ $$ = Node("exp", "");
 				  $$.children.push_back($1);
 				}
-	| op			{ $$ = $1; }
+	| ops			{ $$ = $1; }
 	;
 
 prefixexp
@@ -385,7 +384,7 @@ parlist
 	;
 
 tableconstructor
-	: BRACE_L fieldlist BRACE_R
+	: BRACE_L fieldlistexp BRACE_R
 				{ $$ = Node("tableconstructor", ""); 
 				  $$.children.push_back($2);
 				}
@@ -487,7 +486,7 @@ ops_3
 				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
-	| ops_3 TILDE_EQUAL_THAN ops_4
+	| ops_3 TILDE_EQUAL ops_4
 				{ $$ = Node("op", "binop");
 				  $$.children.push_back($1);
 				  $$.children.push_back(Node("binop", $2));
