@@ -188,11 +188,11 @@ stat
 	| DO block END
 	| WHILE exp DO block END
 	| REPEAT block UNTIL exp
-	| IF exp THEN elseifexp else END
+	| IF exp THEN optelseif optelse END
 	| FOR name ASSIGN exp COMMA exp DO block END
 	| FOR name ASSIGN exp COMMA exp COMMA exp DO block END
 	| FOR namelist IN explist DO block END
-	| FUNCTION funcname funcbody
+	| FUNCTION funcnamelist funcbody
 	| LOCAL FUNCTION name funcbody
 	| LOCAL namelist
 	| LOCAL namelist ASSIGN explist
@@ -202,21 +202,21 @@ ifexp
 	: IF exp THEN block
 	;
 
-elseifexp
+optelseif
 	: elseif
-	| elseexp elseif
+	| optelseif elseif
 	| /*empty*/
 	;
 
 elseif
 	: ELSEIF exp THEN block
 
-else
+optelse
 	: ELSE block
 	| /*empty*/
 	;
 
-funcnameexp
+funcnamelist
 	: funcname
 	| funcname COLON name
 
@@ -327,4 +327,63 @@ optfieldsep
 
 string
 	: STRING
+	;
+
+/* Operator precedence in reverse since LARL */
+ops
+	: ops_1
+	;
+
+ops_1
+	: ops_1 OR ops_2
+	| ops_2
+	;
+
+ops_2
+	: ops_2 AND ops_3
+	| ops_3
+	;
+
+ops_3
+	: ops_3 LESS_THAN ops_4
+	| ops_3 MORE_THAN ops_4
+	| ops_3 LESS_EQUAL_THAN ops_4
+	| ops_3 MORE_EQUAL_THAN ops_4
+	| ops_3 TILDE_EQUAL_THAN ops_4
+	| ops_3 EQUAL ops_4
+	| ops_4
+	;
+
+ops_4
+	: ops_4 CONCAT ops_5
+	| ops_5
+	;
+
+ops_5
+	: ops_5 PLUS ops_6
+	| ops_5 MIN ops_6
+	| ops_6
+	;
+
+ops_6
+	: ops_6 MUL ops_7
+	| ops_6 DIV ops_7
+	| ops_6 MOD ops_7
+	| ops_7
+	;
+
+ops_7
+	: ops_7 NOT ops_8
+	| ops_7 LEN ops_8
+	| ops_7 MIN ops_8
+	| ops_8
+	;
+
+ops_8
+	: ops_8 POW ops_9
+	| ops_9
+	;
+
+ops_9
+	: exp
 	;
