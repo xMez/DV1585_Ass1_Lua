@@ -1,0 +1,13 @@
+*.tab.*
+*.o
+*.hh
+int
+*.yy.c
+*.swo
+*.swp
+*.png
+*.dot
+!node.hh
+*.lua
+*.txt
+*.svg
