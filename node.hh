@@ -1,6 +1,7 @@
 #ifndef NODE_HH
 #define NODE_HH
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <list>
 class Node {
@@ -16,6 +17,19 @@ public:
 		std::cout << tag << ":" << value << std::endl;
 		for(auto i=children.begin(); i!=children.end(); i++)
 			(*i).dump(depth+1);
+	}
+	std::ostringstream toStream(int &depth, int parent=0)
+	{
+		std::ostringstream oss;
+		oss << depth << " [label=\"" << tag << ":" << value << "\"];\n";
+		for(auto i=children.begin(); i!=children.end(); i++)
+		{
+			depth++;
+			oss << parent << " -> " << depth << "\n";
+			oss << (*i).toStream(depth, depth).str();
+		}
+		parent++;
+		return oss;
 	}
 };
 #endif
