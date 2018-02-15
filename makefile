@@ -1,5 +1,5 @@
 parser: lex.yy.c binary.tab.o main.cc
-	g++ -std=c++11 -g -oparser binary.tab.o lex.yy.c main.cc
+	g++ -std=c++11 -g -oint binary.tab.o lex.yy.c main.cc node.cc
 binary.tab.o: binary.tab.cc
 	g++ -std=c++11 -g -c binary.tab.cc
 binary.tab.cc: binary.yy
