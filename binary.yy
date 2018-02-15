@@ -276,9 +276,7 @@ varlist
 	;
 
 var
-	: name			{ $$ = Node("var", "");
-				  $$.children.push_back($1);
-				}
+	: name			{ $$ = $1;}
 	| prefixexp BRACK_L exp BRACK_R
 				{ $$ = Node("var", "bracket");
 				  $$.children.push_back($1);
@@ -435,18 +433,17 @@ optfieldsep
 	| /*empty*/
 
 string
-	: STRING		{ $$ = Node("string", $1); }
+	: STRING		{ $$ = Node("string", $1.substr(1, $1.size() - 2)); }
 	;
 
-/* Operator precedence in reverse since LARL */
+/* Operator precedence in reverse since LR */
 ops
 	: ops_1			{ $$ = $1; }
 	;
 
 ops_1
-	: ops_1 OR ops_2	{ $$ = Node("op", "binop");
+	: ops_1 OR ops_2	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_2			{ $$ = $1; }
@@ -454,9 +451,8 @@ ops_1
 	;
 
 ops_2
-	: ops_2 AND ops_3	{ $$ = Node("op", "binop");
+	: ops_2 AND ops_3	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_3			{ $$ = $1; }
@@ -464,37 +460,31 @@ ops_2
 	;
 
 ops_3
-	: ops_3 LESS_THAN ops_4	{ $$ = Node("op", "binop");
+	: ops_3 LESS_THAN ops_4	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
-	| ops_3 MORE_THAN ops_4	{ $$ = Node("op", "binop");
+	| ops_3 MORE_THAN ops_4	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_3 LESS_EQUAL_THAN ops_4
-				{ $$ = Node("op", "binop");
+				{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_3 MORE_EQUAL_THAN ops_4
-				{ $$ = Node("op", "binop");
+				{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_3 TILDE_EQUAL ops_4
-				{ $$ = Node("op", "binop");
+				{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
-	| ops_3 EQUAL ops_4	{ $$ = Node("op", "binop");
+	| ops_3 EQUAL ops_4	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_4			{ $$ = $1; }
@@ -502,24 +492,21 @@ ops_3
 	;
 
 ops_4
-	: ops_4 CONCAT ops_5	{ $$ = Node("op", "binop");
-				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
+	: ops_4 CONCAT ops_5	{ $$ = Node("binop", $2);
 				  $$.children.push_back($3);
+				  $$.children.push_back($1);
 				}
 	| ops_5			{ $$ = $1; }
 
 	;
 
 ops_5
-	: ops_5 PLUS ops_6	{ $$ = Node("op", "binop");
+	: ops_5 PLUS ops_6	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
-	| ops_5 MIN ops_6	{ $$ = Node("op", "binop");
+	| ops_5 MIN ops_6	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_6			{ $$ = $1; }
@@ -527,19 +514,16 @@ ops_5
 	;
 
 ops_6
-	: ops_6 MUL ops_7	{ $$ = Node("op", "binop");
+	: ops_6 MUL ops_7	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
-	| ops_6 DIV ops_7	{ $$ = Node("op", "binop");
+	| ops_6 DIV ops_7	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
-	| ops_6 MOD ops_7	{ $$ = Node("op", "binop");
+	| ops_6 MOD ops_7	{ $$ = Node("binop", $2);
 				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
 				  $$.children.push_back($3);
 				}
 	| ops_7			{ $$ = $1; }
@@ -547,16 +531,13 @@ ops_6
 	;
 
 ops_7
-	: NOT ops_8		{ $$ = Node("op", "unop");
-				  $$.children.push_back(Node("binop", $1));
+	: NOT ops_8		{ $$ = Node("unop", $1);
 				  $$.children.push_back($2);
 				}
-	| LEN ops_8		{ $$ = Node("op", "unop");
-				  $$.children.push_back(Node("binop", $1));
+	| LEN ops_8		{ $$ = Node("unop", $1);
 				  $$.children.push_back($2);
 				}
-	| MIN ops_8		{ $$ = Node("op", "unop");
-				  $$.children.push_back(Node("binop", $1));
+	| MIN ops_8		{ $$ = Node("unop", $1);
 				  $$.children.push_back($2);
 				}
 	| ops_8			{ $$ = $1; }
@@ -564,10 +545,9 @@ ops_7
 	;
 
 ops_8
-	: ops_8 POW ops_9	{ $$ = Node("op", "binop");
-				  $$.children.push_back($1);
-				  $$.children.push_back(Node("binop", $2));
+	: ops_8 POW ops_9	{ $$ = Node("binop", $2);
 				  $$.children.push_back($3);
+				  $$.children.push_back($1);
 				}
 	| ops_9			{ $$ = $1; }
 

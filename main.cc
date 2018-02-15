@@ -29,7 +29,11 @@ int main(int argc, char **argv)
 		yyin = fopen(argv[1], "r");
 	yy::parser parser;
 	if(!parser.parse())
+	{
+		//root.dump();
 		makeFile();
+		root.execute();
+	}
 	fclose(yyin);
 	return 0;
 }
