@@ -30,8 +30,8 @@ int main(int argc, char **argv)
 	yy::parser parser;
 	if(!parser.parse())
 	{
-		//root.dump();
-		makeFile();
+		root.dump();
+		//makeFile();
 		root.execute();
 	}
 	fclose(yyin);
