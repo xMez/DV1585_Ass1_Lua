@@ -76,7 +76,7 @@ float Node::execute()
 	{
 		std::string name = children.front().value;
 		if(name == "print")
-			std::cout << children.back().execute();
+			std::cout << evalString(children.back()) << std::endl;
 	}
 	else if(tag == "chunk")
 	for(auto i=children.begin(); i!=children.end(); i++)
@@ -85,9 +85,16 @@ float Node::execute()
 		result = children.front().execute();
 	return result;
 }
+std::string Node::evalString(Node &explist)
+{
+	std::stringstream ss;
+	for(auto i=explist.children.begin(); i!=explist.children.end(); i++)
+		ss << (*i).execute() << "\t";
+	return ss.str();
+}
 void Node::assignVar(Node &key, Node &value)
 {
-	std::cout << "new var " << key.value << std::endl;
+	//std::cout << "new var " << key.value << std::endl;
 	globals.assign(key.value, std::to_string(value.execute()));
-	std::cout << globals.eval(key.value) << std::endl;
+	//std::cout << globals.eval(key.value) << std::endl;
 }
