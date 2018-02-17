@@ -16,7 +16,8 @@ public:
 	void dump(int depth=0);
 	std::ostringstream toStream(int &depth, int parent=0);
 	float execute();
-	std::string evalString(Node &explist);
+	std::string eval(Node &exp);
+	std::string toString(Node &explist);
 	void assignVar(Node &key, Node &value);
 };
 #endif

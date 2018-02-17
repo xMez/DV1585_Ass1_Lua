@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	{
 		root.dump();
 		//makeFile();
-		root.execute();
+		//root.execute();
 	}
 	fclose(yyin);
 	return 0;

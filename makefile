@@ -9,7 +9,6 @@ lex.yy.c: binary.ll binary.tab.cc
 clean:
 	rm -f binary.tab.* ley.yy.c* int
 submission:
-	rm -r ass1-int
 	mkdir ass1-int
 	cp -t ass1-int/ binary.ll binary.yy enviroment.hh main.cc makefile node.cc node.hh
 	tar -zcvf /home/$$USER/submission.tgz ass1-int
